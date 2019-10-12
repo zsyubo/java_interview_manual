@@ -1,10 +1,10 @@
+> Ps: 至于什么是面向对象、三大特征 我相信每个人都有了自己的理解了，这里就不作为面试题了。
+
 # `List 和 Set 的区别` 
+todo
 
 # `HashSet 是如何保证不重复的` 
-
 Hash底层其实就是一个HashMap来承装元素，同时HashSet重写了equals和hashCode方法老保证set对象的唯一性，hashset：元素作为key，Object最为value。
-
-
 
 # `HashMap 是线程安全的吗，为什么不是线程安全的（最好画图说明多线程环境下不安全）? `
 不管哪个版本，都不建议在多线程的情况下使用HashMap。
@@ -65,41 +65,67 @@ HashMap采用的拉链法。其余的不做说明(我看不懂)，自己了解�
 
 
 # `final finally finalize` 
-
-# `强引用 、软引用、 弱引用、虚引用、Java反射 `
+final用于声明属性，方法和类，分别表示属性不可交变，方法不可覆盖，类不可继承。    
+finally是异常处理语句结构的一部分，表示总是执行。    
+finalize是Object类的一个方法，在垃圾收集器执行的时候会调用被回收对象的此方法，供垃圾收集时的其他资源回收，例如关闭文件等,但是不建议使用。
 
 # `Arrays.sort 实现原理和 Collection 实现原理 `
+todo
 
 # `LinkedHashMap的应用` 
+LinkedHashMap继承于HashMap，简单说：保存了记录的插入顺序，可在遍历时保持与插入一样的顺序。
+LinkedHashMap拓展了HashMap的Entry，加入了`Entry<K,V> before, after;`来保证插入顺序。同时加入了
+```
+    /**
+     * The head (eldest) of the doubly linked list.
+     */
+    transient LinkedHashMap.Entry<K,V> head;
+
+    /**
+     * The tail (youngest) of the doubly linked list.
+     */
+    transient LinkedHashMap.Entry<K,V> tail;
+```
+两个变量确定首尾位置。在newNode(LinedHashMap重写了)的时候就会更新head和tail(更详细自己看源码吧)))。     
+```
+    private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
+        LinkedHashMap.Entry<K,V> last = tail;
+        tail = p;
+        if (last == null)
+            head = p;
+        else {
+            p.before = last;
+            last.after = p;
+        }
+    }
+```
+<img src="https://s2.ax1x.com/2019/10/13/ujlmad.jpg" width="200" hegiht="200" />
+
+![avatar](https://s2.ax1x.com/2019/10/13/ujl3M8.jpg)
 
 # `cloneable接口实现原理` 
+loneable其实就是一个标记接口，只有实现这个接口后，然后在类中重写Object中的clone方法，然后通过类调用clone方法才能克隆成功，如果不实现这个接口，则会抛出CloneNotSupportedException(克隆不被支持)异常。
 
-# `异常分类以及处理机制` 
-
-# `wait和sleep的区别` 
 
 # `数组在内存中如何分配`
+![avatar](https://s2.ax1x.com/2019/10/13/uj1eyT.jpg)
 
-\
 
 # `JAVA 中的几种基本数据类型是什么，各自占用多少字节。`
-
 boolean 、byte、char、short、int、long、float、bouble
+字节详见jvm面试题
 
 
-# `讲讲类的实例化顺序，比如父类静态数据，构造函数，字段，子类静态数据，构造函数，字段，当 new 的时候， 他们的执行顺序。`
 
 # `反射Class.forName 和 ClassLoader.loadClass 区别。`
-
 Class.forName 默认初始化类，ClassLoader.loadClass不会。
 
-# `有序Map：treeMap`
-treeMap底层是使用的 红黑树
+# `有序Map：TreeMap`
+TreeMap底层是使用的 红黑树。对红黑树还只是概念，以后再补充。
 
 
 
 # `Hashset的 value为撒用Object？`
-
 因为hashMap的remove方法会返回被移除数据，如果为null的话，无法判断是否被移除成功。
 
 
@@ -107,8 +133,11 @@ treeMap底层是使用的 红黑树
 为什么 Lambda 表达式(匿名类) 不能访问非 final 的局部变量呢？因为实例变量存在堆中，而局部变量是在栈上分配，Lambda 表达(匿名类) 会在另一个线程中执行。如果在线程中要直接访问一个局部变量，可能线程执行时该局部变量已经被销毁了，而 final 类型的局部变量在 Lambda 表达式(匿名类) 中其实是局部变量的一个拷贝。
 
 # `为什么arrayList 扩容是1.5倍多？`
+<img src="https://s2.ax1x.com/2019/10/13/uj3ugP.jpg" width="500" hegiht="500" />
+
 
 # `动态代理与cglib实现的区别？`
+todo
 
 # `函数式编程优点？`
 . 函数和变量的地位相同，可以作为参数和返回值
