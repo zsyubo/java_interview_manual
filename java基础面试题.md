@@ -1,7 +1,8 @@
 > Ps: 至于什么是面向对象、三大特征 我相信每个人都有了自己的理解了，这里就不作为面试题了。
 
 # `List 和 Set 的区别` 
-todo
+List 是可重复集合，Set 是不可重复集合，这两个接口都实现了 Collection 父接口。     
+Map 未继承 Collection，而是独立的接口，Map 是一种把键对象和值对象进行映射的集合，它的每一个元素都包含了一对键对象和值对象，Map 中存储的数据是没有顺序的， 其 key 是不能重复的，它的值是可以有重复的。
 
 # `HashSet 是如何保证不重复的` 
 Hash底层其实就是一个HashMap来承装元素，同时HashSet重写了equals和hashCode方法老保证set对象的唯一性，hashset：元素作为key，Object最为value。
