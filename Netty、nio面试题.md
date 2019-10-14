@@ -24,7 +24,7 @@ NIo组件:缓冲区Buffer、通道Channel、多路复用器Selector
 # `Netty 的各大组件 `
 
 # `Netty的线程模型` 
-
+更加优雅的 Reactor 模式实现、灵活的线程模型、利用 EventLoop 等创新性的机制，可以非常高效地管理成百上千的 Channel 。
 
 
 # `了解哪几种序列化协议？包括使用场景和如何去选择` 
@@ -64,6 +64,21 @@ Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存�
 3、对于FileChannel.transferTo的使用
 
 Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷贝。
+
+**`答案2：`**    
+Netty 的零拷贝实现，是体现在多方面的，主要如下：     
+【重点】Netty 的接收和发送 ByteBuffer 采用堆外直接内存 Direct Buffer 。
+- 使用堆外直接内存进行 Socket 读写，不需要进行字节缓冲区的二次拷贝；使用堆内内存会多了一次内存拷贝，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写入 Socket 中。
+-  Netty 创建的 ByteBuffer 类型，由 ChannelConfig 配置。而 ChannelConfig 配置的 ByteBufAllocator 默认创建 Direct Buffer 类型。
+
+CompositeByteBuf 类，可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf ，避免了传统通过内存拷贝的方式将几个小 Buffer 合并成一个大的 Buffer 。
+- #addComponents(...) 方法，可将 header 与 body 合并为一个逻辑上的 ByteBuf 。这两个 ByteBuf 在CompositeByteBuf 内部都是单独存在的，即 CompositeByteBuf 只是逻辑上是一个整体。
+ 
+通过 FileRegion 包装的 FileChannel 。
+- #tranferTo(...) 方法，实现文件传输, 可以直接将文件缓冲区的数据发送到目标 Channel ，避免了传统通过循环 write 方式，导致的内存拷贝问题。
+    通过 wrap 方法, 我们可以将 byte[] 数组、ByteBuf、ByteBuffer 等包装成一个 Netty ByteBuf 对象, 进而避免了拷贝操作。
+
+
 
 # `Netty的高性能表现在哪些方面`
 
