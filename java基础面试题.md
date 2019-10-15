@@ -146,3 +146,42 @@ todo
 . 支持惰性计算，可以等到需要求值的时候再进行计算
 . 只使用表达式，不使用语句，所有的代码都是单纯的运算过程，所有的操作都是用于处理运算
 . 没有副作用，所有的功能均返回一个新的值，不会改变外部变量的状态和值
+
+# `Stream流`
+Stream 不是集合元素，它不是数据结构并不保存数据，它是有关算法和计算的，它更像一个高级版本的 Iterator
+Stream的常用中间操作
+1. peek()--消费流中的每一个元素
+2. map() mapToInt() mapToDouble()等等--将流中的每一个元素映射为另一个元素
+3. filter()--将流中满足要求的元素过滤出来
+4. sort()--将流中的元素按一定的规则排序
+5. distinct()--去重
+6. limit()--截断流只保留指定个数的元素
+
+
+# `你实际开发遇到哪些Exception？`
+NullPointerException、IOException、ArrayIndexOutOfBoundsException、IndexOutOfBoundsException、InterruptedException
+
+# `StringBuffer和StringBuilder是否线程安全?`
+StringBuffer都是同步方法，synchronized包裹。     
+stringBuilder分线程安全。
+
+# `Tomcat 优化？`
+1. 8.0以前默认BIO，需要配置成NIO
+2. 服务器返回给客户端的xml报文数据量太大，费时耗流量，于是要求服务端添加gzip支持。所以服务端采用gzip压缩，极大减小网络传输数据，提高响应速度和减少流量。    
+
+**线程池优化**
+name：线程池名称，用于 Connector中指定。
+namePrefix：所创建的每个线程的名称前缀，一个单独的线程名称为 namePrefix+threadNumber。
+maxThreads：池中最大线程数。
+minSpareThreads：活跃线程数，也就是核心池线程数，这些线程不会被销毁，会一直存在。
+maxIdleTime：线程空闲时间，超过该时间后，空闲线程会被销毁，默认值为6000（1分钟），单位毫秒。
+maxQueueSize：在被执行前最大线程排队数目，默认为Int的最大值，也就是广义的无限。除非特殊情况，这个值不需要更改，否则会有请求不会被处理的情况发生。
+prestartminSpareThreads：启动线程池时是否启动 minSpareThreads部分线程。默认值为false，即不启动。
+threadPriority：线程池中线程优先级，默认值为5，值从1到10。
+className：线程池实现类，未指定情况下，默认实现类为org.apache.catalina.core.StandardThreadExecutor。如果想使用自定义线程池首先需要实现 org.apache.catalina.Executor接口。
+
+> https://blog.csdn.net/qq_28109171/article/details/84256783  tomcat 性能调优
+
+**ARP优化**
+todo
+
