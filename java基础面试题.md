@@ -185,3 +185,27 @@ className：线程池实现类，未指定情况下，默认实现类为org.apac
 **ARP优化**
 todo
 
+# # Java8中时间API发生了那些改变？
+Java8之前的日期和时间处理比较难用，主要有几方面
+1. Java的`java.util.Date`和`java.util.Calendar`类易用性查，而且不是线程安全的。
+2. SimpleDateFormat格式化时间不是线程安全的。
+3. 对日期的计算比较繁琐，而且容易出错，因为月份是从0开始的，从Calendar中获取的月份需要加一才能表示当前月份。
+
+在java8中有了新增了时间类。
+**LocalDate和LocalTime**     
+LocalDate和LocalTime类似，LocalDate不包含具体时间，而LocalTime包含具体时间。
+
+**LocalDateTime**     
+todo
+是LocalDate和LocalTime的结合体，可以直接创建LocalDate和LoaclTime。
+> 参考：https://lw900925.github.io/java/java8-newtime-api.html
+
+# # SimpleDateFormat并发隐患及其解决
+非线程安全的，这个在类注释中也说明了的，主要是`format`方法(当然其他方法也有,比如`parse`方法)
+![](https://s2.ax1x.com/2019/10/20/KMcIWF.md.png)     
+假设线程1刚刚执行完calendar.setTime把时间设置成2018-11-11，还没等执行完，线程2又执行了calendar.setTime把时间改成了2018-12-12。这时候线程1继续往下执行，拿到的calendar.getTime得到的时间就是线程2改过之后的。所以在并发下有问题。
+
+**解决方案**
+1. ThreadLocal
+2. 在调用`format`方法时加锁。
+3. java8的DateTimeFormatter。他是线程安全。

@@ -67,7 +67,29 @@ https://javadoop.com/post/spring-ioc
 5. 而BeanFactory接口是面向用户的，实际上他只是一个触发器，用户调用getBean方法，会先去beanDefinitionMap查找这个Bean是否已经生成了BeanDefinition，没有就报错，有就根据BeanDefinition来反射创建一个Bean，因为默认是单例的，创建完之后就缓存在singletonObjects里面
 
 # `Spring AOP 的理解及其原理？ `
-Spring AOP实现的默认两种方式：DK动态代理、CGLIB
+AOP是面向切面编程，是对OOP的一种补充，主要用于处理一些具有横切面性质的服务，比如日志输出、安全控制等。
+
+Spring AOP实现的默认两种方式：JDK动态代理、CGLIB。
+
+**AOP主要的两种实现**
+
+- Spring AOP
+
+  采用的是动态代理，在运行期间对业务方法进行增强，所以不会产生新类。
+
+- AspectJ
+
+  底层技术是静态代理。主要是在编译期时，在不改变代码的前提下织入代理。
+
+**JDK动态代理(实现接口)、CGLIB(继承)**
+
+- JDK动态代理
+
+  只能为接口创建动态代理实例，需要需要获取目标类的接口信息
+
+- CGLIB
+
+  依赖asm包。修改器目标类的字节码生成子类。
 
 
 # `BeanFactory 和 ApplicationContext？` 
@@ -88,6 +110,19 @@ ApplicationContext：应用上下文，继承BeanFactory接口，是BeanFactory�
 
 # `Spring Bean 的生命周期，如何被管理的？`
 
+todo
+
+1. 实例化,也就是new
+2. 设置bean的Aware
+3. BeanPostProcessor.postProcessBeforeInitialization(Object bean, String beanName)
+4. InitializingBean.afterPorpertiesSet
+5. BeanPostProcessor.postProcessAfterInitialization(Object bean, String beanName)
+6. SmartInitializingSingleton.afterSingletonsInstantiated
+7. SmartLifecycle.start
+8. bean已经在spring容器的管理下，可以做我们想做的事
+9. SmartLifecycle.stop(Runnable callback)
+10. DisposableBean.destroy()
+
 
 
 # `Spring Bean 的获取过程是怎样的？` 
@@ -99,7 +134,17 @@ ApplicationContext：应用上下文，继承BeanFactory接口，是BeanFactory�
 #  `如果要你实现Spring IOC，你会注意哪些问题？ `
 
 #  `Spring 是如何管理事务的，事务管理机制？` 
-Spring的事务机制包括声明式事务和编程式事务。
+Spring的事务机制包括声明式事务和编程式事务。Spring 采用AOP来实现生命式事务。因为这一点，所以才有了事务失效的问题
+
+编程是事务：编程式**事务管理**使用TransactionTemplate或者直接使用底层的PlatformTransactionManager。对于编程式**事务管理**，**spring**推荐使用TransactionTemplate。
+
+**原理**
+
+todo
+
+> [Spring事务原理一探](https://zhuanlan.zhihu.com/p/54067384)
+>
+> []()
 
 #  `Spring 的不同事务传播行为有哪些，干什么用的？` 
 ![](https://s2.ax1x.com/2019/10/13/ux6XUH.jpg)
@@ -122,7 +167,7 @@ e. Handler 返回的 ModelAndView()只是一个逻辑视图并不是一个正式
 
 ViewResolver 试图解析器将逻辑视图转化为真正的视图 View;
 
-h. DispatcherServle 通过 model 解析出 ModelAndView()中的参数进行解析最终展现出完整的 view 并返回给
+h. DispatcherServle 通过 model 解析出 ModelAndView(视图解析器)中的参数进行解析最终展现出完整的 view 并返回给
 
 
 
@@ -168,8 +213,6 @@ Weaving（织入）：将 Aspect 和其他对象连接起来, 并创建 Adviced 
 
 原文链接：https://blog.csdn.net/q982151756/article/details/80513340
 
-#  `AOP的原理`
-
 #  `Spring 如何保证 Controller 并发的安全？`
 
 # `Spring boot 加载过程`
@@ -183,9 +226,10 @@ https://blog.51cto.com/zero01/2103911
 二级缓存是跨session。需要自己实现。
 # `mybatis #和$区别` 
 \#号是预编译的，防止sql注入
-$是直接替换，字符串拼接，不能防止sql注入
-使用#在初始化阶段，会被替换成？号，同时生成参数映射，而使用$在初始化阶段，没有什么特别的地方，仅仅做了一个是否动态语句的判断
+\$是直接替换，字符串拼接，不能防止sql注入
+使用#在初始化阶段，会被替换成？号，同时生成参数映射，而使用\$在初始化阶段，没有什么特别的地方，仅仅做了一个是否动态语句的判断
 具体底层参见：https://blog.csdn.net/surpass0728/article/details/80697442
+
 # `mybatis 用了哪些设计模式能说说么？` 
 最显而易见的就是SqlSessionFactoryBuilder、XMLConfigBuilder、XMLMapperBuilder等，使用的是Builder。为什么使用了？因为更自由。
 工厂模式：SqlSessionFactory(获取Sqlsession)、MapperProxyFactory(创建动态代理的)。
@@ -289,3 +333,60 @@ public class ErrorMvcAutoConfiguration {}
 **`总结`**    
 自动装配不是什么新鲜事物。Spring boot只是做了自己的整合，依靠`@ConditionalOnClass`、`@Import()`......等注解来组合实现的。
 
+# # Spring 事务失效问题以及原因？
+代码如下图：
+```
+class T {
+    public int createFirst(){
+       //dosometing....
+       try {
+           this.createSecond();
+       }catch (Exception e){
+          throw e;
+       }
+       //dosometing....
+       return 0;
+    }
+    @Transactional
+    public int createSecond(){
+       //dosometing with db....
+
+    }
+}
+```
+在实际中会出现`createSecond()方法`事务不起作用的情况。这里主要问题就是在于这个额this，this就是指当前对象，问题就出在这，想要事务执行`createSecond()方法`，必须使用代理对象执行，因为代理对象会拦截到`@Transactional`来执行相关的增强。但是此时却是直接调用，绕过了代理对象增强的部分，也就是代理增强部分失效。     
+**解决方案**是，手动获取代理对象
+```
+T t = (T) AopContext.currentProxy(); 
+//获取代理对象
+t.createSecond(); 
+//通过代理对象调用createSecond
+
+//需要在@EnableAspectJAutoProxy添加属性值。
+//@EnableAspectJAutoProxy(exposeProxy = true)
+```
+> https://blog.csdn.net/canot/article/details/80855439  从Spring AOP的原理理解@Transactional失效问题
+
+
+# # @Bean注解嵌套情况
+```
+ @Bean
+    public UserEntity userEntity() {
+        System.out.println("userEntity-1");
+        getTestBean();
+        System.out.println("userEntity-2");
+        return new UserEntity("mayikt", 21);
+    }
+
+    @Bean
+    public TestBean getTestBean(){
+        System.out.println("getTestBean执行");
+        return new TestBean(99,"Hello");
+    }
+```
+执行结果，不会重复执行。
+```
+userEntity-1
+getTestBean执行
+userEntity-2
+```
