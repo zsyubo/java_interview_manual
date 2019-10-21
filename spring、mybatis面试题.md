@@ -390,3 +390,25 @@ userEntity-1
 getTestBean执行
 userEntity-2
 ```
+
+
+
+# # Spring boot启动流程？
+
+硬骨头，这只是讲个大概。
+
+1. 日常编写的Spring boot启动类上有`@SpringBootApplication`注解和`SpringApplication.run()`
+
+   注解没什么好说的，主要就是`@SpringBootConfiguration(相当于一个Configuration)、@EnableAutoConfiguration(自动装配)`两个注解。主要的启动方式`run()`方法
+
+2.  使用`SpringFactoriesLoader`查找并加载classpath下的`MATE/spring.factories`文件的`ApplicationContextInitializer`并实例化子类。主要是对ConfiurableApplicationContext的实例做进一步的设置和处理。
+
+3. `run`方法进入一开始就是通过依赖所包含的jar来`推断`应用的类型，是`Reactive应用`、`servlet应用`、`NONE`三种的那一种。
+
+4. 找出所有的`SpringApplicationRunListener`并封装到`SpringApplicationRunListeners`中，用于监听run方法的执行。监听的过程中会封装成事件并广播出去让初始化过程中产生的应用程序监听器进行监听 。
+
+5. 打印Banner。
+
+6. 使用`SpringFactoriesLoader`查找并加载classpath下的`MATE/spring.factories`文件的`SpringBootExceptionReporter`。这个是分析异常的？todo
+
+7. 执行Spring的初始化流程。
