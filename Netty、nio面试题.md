@@ -88,42 +88,26 @@ Netty的线程模型并不是一成不变的，他取决于用户的代码和参
 2. 数据从内核缓冲区拷贝到用户缓冲区
 3. 数据从用户缓冲区拷贝到内核的socket buffer
 4. 数据从内核的socket buffer拷贝到网卡接口（硬件）的缓冲区
-**零拷贝**
+
 明显上面的第二步和第三步是没有必要的，通过java的FileChannel.transferTo方法，可以避免上面两次多余的拷贝（当然这需要底层操作系统支持）
+
 1. 调用transferTo,数据从文件由DMA引擎拷贝到内核read buffer
+
 2. 接着DMA从内核read buffer将数据拷贝到网卡接口buffer
-上面的两次操作都不需要CPU参与，所以就达到了零拷贝。
+   上面的两次操作都不需要CPU参与，所以就达到了零拷贝。
 
-**netty中的零拷贝***
+零拷贝**
 
-1、bytebuffer
+在OS层面的零拷贝主要避免在`用户态`与`内核态`之间来回拷贝数据。Netty中的零拷贝不同于OS层面，Netty的零拷贝主要是在用户态，更多偏向于`优化数据操作`的概念
 
-Netty发送和接收消息主要使用bytebuffer，bytebuffer使用对外内存（DirectMemory）直接进行Socket读写。
+- Netty 提供了 `CompositeByteBuf` 类, 它可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf, 避免了各个 ByteBuf 之间的拷贝.
 
-原因：如果使用传统的堆内存进行Socket读写，JVM会将堆内存buffer拷贝一份到直接内存中然后再写入socket，多了一次缓冲区的内存拷贝。DirectMemory中可以直接通过DMA发送到网卡接口
+- 通过 wrap 操作, 我们可以将 byte[] 数组、ByteBuf、ByteBuffer等包装成一个 Netty ByteBuf 对象, 进而避免了拷贝操作.
+- ByteBuf 支持 slice 操作, 因此可以将 ByteBuf 分解为多个共享同一个存储区域的 ByteBuf, 避免了内存的拷贝.
+- 通过 `FileRegion` 包装的`FileChannel.tranferTo` 实现文件传输, 可以直接将文件缓冲区的数据发送到目标 `Channel`, 避免了传统通过循环 write 方式导致的内存拷贝问题.
 
-2、Composite Buffers
-
-传统的ByteBuffer，如果需要将两个ByteBuffer中的数据组合到一起，我们需要首先创建一个size=size1+size2大小的新的数组，然后将两个数组中的数据拷贝到新的数组中。但是使用Netty提供的组合ByteBuf，就可以避免这样的操作，因为CompositeByteBuf并没有真正将多个Buffer组合起来，而是保存了它们的引用，从而避免了数据的拷贝，实现了零拷贝。
-
-3、对于FileChannel.transferTo的使用
-
-Netty中使用了FileChannel的transferTo方法，该方法依赖于操作系统实现零拷贝。
-
-**`答案2：`**    
-Netty 的零拷贝实现，是体现在多方面的，主要如下：     
-【重点】Netty 的接收和发送 ByteBuffer 采用堆外直接内存 Direct Buffer 。
-- 使用堆外直接内存进行 Socket 读写，不需要进行字节缓冲区的二次拷贝；使用堆内内存会多了一次内存拷贝，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写入 Socket 中。
--  Netty 创建的 ByteBuffer 类型，由 ChannelConfig 配置。而 ChannelConfig 配置的 ByteBufAllocator 默认创建 Direct Buffer 类型。
-
-CompositeByteBuf 类，可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf ，避免了传统通过内存拷贝的方式将几个小 Buffer 合并成一个大的 Buffer 。
-- #addComponents(...) 方法，可将 header 与 body 合并为一个逻辑上的 ByteBuf 。这两个 ByteBuf 在CompositeByteBuf 内部都是单独存在的，即 CompositeByteBuf 只是逻辑上是一个整体。
-
-通过 FileRegion 包装的 FileChannel 。
-- #tranferTo(...) 方法，实现文件传输, 可以直接将文件缓冲区的数据发送到目标 Channel ，避免了传统通过循环 write 方式，导致的内存拷贝问题。
-    通过 wrap 方法, 我们可以将 byte[] 数组、ByteBuf、ByteBuffer 等包装成一个 Netty ByteBuf 对象, 进而避免了拷贝操作。
-
-
+**参考资料**
+> [对于 Netty ByteBuf 的零拷贝(Zero Copy) 的理解](https://segmentfault.com/a/1190000007560884)
 
 # `Netty的高性能表现在哪些方面`
 

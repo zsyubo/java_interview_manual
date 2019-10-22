@@ -209,3 +209,12 @@ todo
 1. ThreadLocal
 2. 在调用`format`方法时加锁。
 3. java8的DateTimeFormatter。他是线程安全。
+
+
+
+# # Integer类的缓存机制
+
+这些类都有缓存的范围，其中`Byte，Short，Integer，Long为 -128 到 127，Character范围为 0 到 127。`
+
+除了 Integer 可以通过参数改变范围外，其它的都不行。
+

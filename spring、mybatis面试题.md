@@ -1,7 +1,8 @@
 #  `思维导图`
 ![avatar](https://s2.ax1x.com/2019/10/13/ux6tu8.md.jpg)
 
-#  `IOC和DI区别？`
+# # `Spring`
+## ## `IOC和DI区别？`
 IOC是一种思想，DI则是一种实现手段。IOC有两种实现手段：DI（依赖查找），DL(依赖注入)
 
 **IOC：控制反转 **
@@ -16,7 +17,7 @@ IOC是一种思想，DI则是一种实现手段。IOC有两种实现手段：DI�
 
 实体被动接受其依赖的其他组件被IOC容器注入
 
-# `如果我想注册一个Mysql Driver到Spring有几种方式？`
+## ## `如果我想注册一个Mysql Driver到Spring有几种方式？`
 
 1. xml 定义bean标签
 
@@ -26,7 +27,7 @@ IOC是一种思想，DI则是一种实现手段。IOC有两种实现手段：DI�
 
 4. 其他。。。。。。
 
-# `spring依赖注入有几种方式？`
+## ## `spring依赖注入有几种方式？`
 
 1. set
 
@@ -37,7 +38,7 @@ IOC是一种思想，DI则是一种实现手段。IOC有两种实现手段：DI�
 4. 方法注入？
 
 
-# `Spring内部是怎样描述一个Bean信息的？`
+## ## `Spring内部是怎样描述一个Bean信息的？`
 
 BeanDefinition描述一个Bean信息，比如beanclassName、作用域、是否是懒加载等。是一个接口，其中一些重要的属性(XML为例)
 ![avatar](https://s2.ax1x.com/2019/10/13/ux6sg0.jpg)
@@ -53,12 +54,12 @@ BeanDefinition描述一个Bean信息，比如beanclassName、作用域、是否�
 ```
 这里也可以看出，我们注册时，可以多次注册同一个bean，只需要保证每一次的beanname不同就行。
 
-# `BeanFactory 和 FactoryBean？`
+## ## `BeanFactory 和 FactoryBean？`
 BeanFactory是Spring里面最低层的接口，提供了最简单的容器的功能，提供读取配置文件、管理加载Bean，实例化、维护Bean之间的依赖关系，同时负责Bean的生命周期。 
 
 FactoryBean只是一个Bean，但是比较特殊，它是一个能生产对象的工厂Bean，他的实现类最终也会注册到BeanFactory。也就是我们可以自定义FactoryBean来控制一个Bean的生产过程。FactoryBean是一个接口,一个Class 对应一个FactoryBean。
 
-# `Spring IOC 的理解，其初始化过程？ `
+## ## `Spring IOC 的理解，其初始化过程？ `
 https://javadoop.com/post/spring-ioc
 1. IOC启动的时候会从配置文件读取需要注册的Bean信息，然后封装成一个BeanDefinition。
 2. 因为Spring默认是懒加载，到getBean时才会真正实例化Bean。所以会先把BeanDefinition放入到BeanDefinitionRegistry容器中。
@@ -66,7 +67,7 @@ https://javadoop.com/post/spring-ioc
 4. beanDefinitionMap负责缓存所有注册过的BeanDefinition;singletonObjects为单例类的缓存器，每个通过BeanDefinitionRegistry创建出来的bean，都缓存在singletonObjects里面，除非是多例
 5. 而BeanFactory接口是面向用户的，实际上他只是一个触发器，用户调用getBean方法，会先去beanDefinitionMap查找这个Bean是否已经生成了BeanDefinition，没有就报错，有就根据BeanDefinition来反射创建一个Bean，因为默认是单例的，创建完之后就缓存在singletonObjects里面
 
-# `Spring AOP 的理解及其原理？ `
+## ## `Spring AOP 的理解及其原理？ `
 AOP是面向切面编程，是对OOP的一种补充，主要用于处理一些具有横切面性质的服务，比如日志输出、安全控制等。
 
 Spring AOP实现的默认两种方式：JDK动态代理、CGLIB。
@@ -92,7 +93,7 @@ Spring AOP实现的默认两种方式：JDK动态代理、CGLIB。
   依赖asm包。修改器目标类的字节码生成子类。
 
 
-# `BeanFactory 和 ApplicationContext？` 
+## ## `BeanFactory 和 ApplicationContext？` 
 
 BeanFactory是Spring里面最低层的接口，提供了最简单的容器的功能，提供读取配置文件、管理加载Bean，实例化、维护Bean之间的依赖关系，同时负责Bean的生命周期。
 
@@ -108,32 +109,27 @@ ApplicationContext：应用上下文，继承BeanFactory接口，是BeanFactory�
 
 5. AOP（拦截器）
 
-# `Spring Bean 的生命周期，如何被管理的？`
+## ## `Spring Bean 的生命周期，如何被管理的？`
 
-todo
+TODO，等我看源码了在来总结吧
 
-1. 实例化,也就是new
-2. 设置bean的Aware
-3. BeanPostProcessor.postProcessBeforeInitialization(Object bean, String beanName)
-4. InitializingBean.afterPorpertiesSet
-5. BeanPostProcessor.postProcessAfterInitialization(Object bean, String beanName)
-6. SmartInitializingSingleton.afterSingletonsInstantiated
-7. SmartLifecycle.start
-8. bean已经在spring容器的管理下，可以做我们想做的事
-9. SmartLifecycle.stop(Runnable callback)
-10. DisposableBean.destroy()
+![](https://images0.cnblogs.com/i/580631/201405/181453414212066.png)
 
+![](https://images0.cnblogs.com/i/580631/201405/181454040628981.png)
 
+> [Spring Bean的生命周期)](https://www.cnblogs.com/zrtqsk/p/3735273.html)
 
-# `Spring Bean 的获取过程是怎样的？` 
+## ## `Spring Bean 的获取过程是怎样的？` 
 ![](https://s2.ax1x.com/2019/10/13/ux6h59.jpg)
 
 
-# `如果要你实现Spring AOP，请问怎么实现？` 
+## ## `如果要你实现Spring AOP，请问怎么实现？` 
+TODO
 
-#  `如果要你实现Spring IOC，你会注意哪些问题？ `
+## ##  `如果要你实现Spring IOC，你会注意哪些问题？ `
+TODO
 
-#  `Spring 是如何管理事务的，事务管理机制？` 
+## ##  `Spring 是如何管理事务的，事务管理机制？` 
 Spring的事务机制包括声明式事务和编程式事务。Spring 采用AOP来实现生命式事务。因为这一点，所以才有了事务失效的问题
 
 编程是事务：编程式**事务管理**使用TransactionTemplate或者直接使用底层的PlatformTransactionManager。对于编程式**事务管理**，**spring**推荐使用TransactionTemplate。
@@ -146,12 +142,26 @@ todo
 >
 > []()
 
-#  `Spring 的不同事务传播行为有哪些，干什么用的？` 
+## ## `Spring 的不同事务传播行为有哪些，干什么用的？` 
 ![](https://s2.ax1x.com/2019/10/13/ux6XUH.jpg)
 
-#  ` Spring 中用到了那些设计模式？` 
+## ## ` Spring 中用到了那些设计模式？` 
 
-#  `Spring MVC 的工作原理？` 
+大概9种,这里只说几种常见的。
+
+1. 简单工厂模式：BeanFactory
+2. 单例模式： 单例模式的定义为：保证一个类只有一个单例，并提供一个访问它的全局访问点。Spring只保证了后半句，Spring下默认的Bean都是`singleton`。当然也可以指定`scope=?`
+3. 代理：这个不用说吧，AOP那块。
+4. 观察者(Observer): 当对象的状态改变是，所有依赖它的对象都得到通知并更新。Spring中的Observe模式常用于`listener`。 比如`ApplicationListener`。
+5. 模板方法：定义一个操作骨架，将一些步骤的具体实现交由子类。Spring中几乎所有的扩展，都使用了模板方法模式：比如JdbcTemplate。同时整个ApplicationContext结构也是模板方法的应用。
+
+
+
+> [Spring中用到的九种设计模式](https://blog.csdn.net/w05980598/article/details/79363046)
+>
+> [设计模式——Spring IoC中用到的模板方法模式](https://blog.csdn.net/z69183787/article/details/65628166)
+
+## ## `Spring MVC 的工作原理？` 
 
 a. 用户向服务器发送请求，请求被 springMVC 前端控制器 DispatchServlet 捕获；
 
@@ -171,17 +181,15 @@ h. DispatcherServle 通过 model 解析出 ModelAndView(视图解析器)中的�
 
 
 
-#  `Spring 循环注入的原理？` 
+## ## `Spring 循环注入的原理？` 
 
 Spring为了解决单例的循环依赖问题，使用了三级缓存。
 
-singletonFactories ： 单例对象工厂的cache
+- singletonFactories ： 单例对象工厂的cache
 
-earlySingletonObjects ：提前暴光的单例对象的Cache
+- earlySingletonObjects ：提前暴光的单例对象的Cache
 
-singletonObjects：单例对象的cache
-
-
+- singletonObjects：单例对象的cache
 
 我们在创建bean的时候，首先是从cache中获取这个单例的bean，这个缓存就是singletonObjects。
 
@@ -193,7 +201,7 @@ singletonObjects：单例对象的cache
 
 原文链接：https://blog.csdn.net/u014634338/article/details/83866305
 
-#  `Spring AOP的理解，各个术语，他们是怎么相互工作的？ `
+## ##  `Spring AOP的理解，各个术语，他们是怎么相互工作的？ `
 
 Aspect（切面）： Aspect 声明类似于 Java 中的类声明，在 Aspect 中会包含着一些 Pointcut 以及相应的 Advice。
 
@@ -213,41 +221,42 @@ Weaving（织入）：将 Aspect 和其他对象连接起来, 并创建 Adviced 
 
 原文链接：https://blog.csdn.net/q982151756/article/details/80513340
 
-#  `Spring 如何保证 Controller 并发的安全？`
+## ## `Spring 如何保证 Controller 并发的安全？`
 
-# `Spring boot 加载过程`
+默认配置下不是的。为啥呢？因为默认情况下`@Controller`没有加上`@Scope`，没有加`@Scope`就是默认值singleton，单例的。意思就是系统只会初始化一次Controller容器，所以每次请求的都是同一个Controller容器，当然是非线程安全的。
+
+> [关于Spring的@Controller @Service等的线程安全问题](https://blog.csdn.net/u012843361/article/details/84023869)
 
 
-
-
-# `mybatis一级缓存和二级缓存区别` 
+# # `Mybatis`
+## ## `mybatis一级缓存和二级缓存区别` 
 https://blog.51cto.com/zero01/2103911
 一级缓存是 session中的。默认开启的。
 二级缓存是跨session。需要自己实现。
-# `mybatis #和$区别` 
+## ## `mybatis #和$区别` 
 \#号是预编译的，防止sql注入
 \$是直接替换，字符串拼接，不能防止sql注入
 使用#在初始化阶段，会被替换成？号，同时生成参数映射，而使用\$在初始化阶段，没有什么特别的地方，仅仅做了一个是否动态语句的判断
 具体底层参见：https://blog.csdn.net/surpass0728/article/details/80697442
 
-# `mybatis 用了哪些设计模式能说说么？` 
+## ## `mybatis 用了哪些设计模式能说说么？` 
 最显而易见的就是SqlSessionFactoryBuilder、XMLConfigBuilder、XMLMapperBuilder等，使用的是Builder。为什么使用了？因为更自由。
 工厂模式：SqlSessionFactory(获取Sqlsession)、MapperProxyFactory(创建动态代理的)。
 代理模式：使用JDK动态代理，通过对每一个Mapper对象生成动态代理对象。
 模板方法：Executor：BaseExecutor和SimpleExecutor。
 
 
-# `mybatis 初始化流程？` 
+## ## `mybatis 初始化流程？` 
 **初始化流程**
 首先肯定读取配置文件并解析成一个Configuration，最终更具Configurations生成DefaultSqlSessionFactory。当然Mapper标签的解析也是在这一步。每个Mapper类会解析为MapperProxyFactory，放在MapperRegistry中。而每个Sql标签文件则会解析成一个MappedStatement对象，放在Configuration中的mappedStatements 的StrictMap中(继承自HashMap)，存放的id为类命名空间+标签id。
-# `mybatis 怎么执行一次查询？` 
+## ## `mybatis 怎么执行一次查询？` 
 **获取Sqlsession**
 从初始化的DefaultSqlSessionFactory中创建，先会设置一个事务管理器，默认为自动提交。之后创建一个SimpleExecutor，他是执行最终执行SQl的。
 之后从Sqlsession中的MapperRegistry获取Mapper 的代理对象。默认是使用的Jdk的动态代理。最终由MapperMethod来做整个sql方法执行的入口，
 之后会从一级缓存中查询数据，没有则继续执行查询 。根据既有的参数(MappedStatement)，创建StatementHandler对象来执行查询操作，默认是执行sql的是PreparedStatement
 将创建Statement传递给StatementHandler对象,调用parameterize()方法赋值。调用StatementHandler.query()方法，返回List结果集
 这里面值得注意的是一级缓存是默认开启。一级缓存是存放在BaseExecutor的PerpetualCache中，底层其实就是一个HashMap。Key为CacheKey，由MappedStatement的id、分页参数、sql、查询参数组装而成。
-# `mybatis批量插入？` 
+## ## `mybatis批量插入？` 
 第一种就是for循环了，好处了代码控制，比较方便。
 第二种是在打开Sqlsession指定 
 ```
@@ -276,8 +285,8 @@ You can change this value on the server by setting the max_allowed_packet' varia
 
 
 
-
-# # `Spring boot自动装配原理？`
+# # `Spring boot`
+## ## `Spring boot自动装配原理？`
 开启Spring自动装配的注解是`@EnableAutoConfiguration`,其注解有一行很重要：`@Import(AutoConfigurationImportSelector.class);`
 @Import 注解可以普通类导入到 IoC容器中,AutoConfigurationImportSelector是自动装配非常核心的类，其中一段代码：
 ```
@@ -333,7 +342,29 @@ public class ErrorMvcAutoConfiguration {}
 **`总结`**    
 自动装配不是什么新鲜事物。Spring boot只是做了自己的整合，依靠`@ConditionalOnClass`、`@Import()`......等注解来组合实现的。
 
-# # Spring 事务失效问题以及原因？
+## ## Spring boot启动流程？
+
+硬骨头，这只是讲个大概。
+
+1. 日常编写的Spring boot启动类上有`@SpringBootApplication`注解和`SpringApplication.run()`
+
+   注解没什么好说的，主要就是`@SpringBootConfiguration(相当于一个Configuration)、@EnableAutoConfiguration(自动装配)`两个注解。主要的启动方式`run()`方法
+
+2.  使用`SpringFactoriesLoader`查找并加载classpath下的`MATE/spring.factories`文件的`ApplicationContextInitializer`并实例化子类。主要是对ConfiurableApplicationContext的实例做进一步的设置和处理。
+
+3. `run`方法进入一开始就是通过依赖所包含的jar来`推断`应用的类型，是`Reactive应用`、`servlet应用`、`NONE`三种的那一种。
+
+4. 找出所有的`SpringApplicationRunListener`并封装到`SpringApplicationRunListeners`中，用于监听run方法的执行。监听的过程中会封装成事件并广播出去让初始化过程中产生的应用程序监听器进行监听 。
+
+5. 打印Banner。
+
+6. 使用`SpringFactoriesLoader`查找并加载classpath下的`MATE/spring.factories`文件的`SpringBootExceptionReporter`。这个是分析异常的？todo
+
+7. 执行Spring的初始化流程。
+
+
+# # `一些疑难杂症`
+## ## Spring 事务失效问题以及原因？
 代码如下图：
 ```
 class T {
@@ -368,7 +399,7 @@ t.createSecond();
 > https://blog.csdn.net/canot/article/details/80855439  从Spring AOP的原理理解@Transactional失效问题
 
 
-# # @Bean注解嵌套情况
+## ## @Bean注解嵌套情况
 ```
  @Bean
     public UserEntity userEntity() {
@@ -393,22 +424,3 @@ userEntity-2
 
 
 
-# # Spring boot启动流程？
-
-硬骨头，这只是讲个大概。
-
-1. 日常编写的Spring boot启动类上有`@SpringBootApplication`注解和`SpringApplication.run()`
-
-   注解没什么好说的，主要就是`@SpringBootConfiguration(相当于一个Configuration)、@EnableAutoConfiguration(自动装配)`两个注解。主要的启动方式`run()`方法
-
-2.  使用`SpringFactoriesLoader`查找并加载classpath下的`MATE/spring.factories`文件的`ApplicationContextInitializer`并实例化子类。主要是对ConfiurableApplicationContext的实例做进一步的设置和处理。
-
-3. `run`方法进入一开始就是通过依赖所包含的jar来`推断`应用的类型，是`Reactive应用`、`servlet应用`、`NONE`三种的那一种。
-
-4. 找出所有的`SpringApplicationRunListener`并封装到`SpringApplicationRunListeners`中，用于监听run方法的执行。监听的过程中会封装成事件并广播出去让初始化过程中产生的应用程序监听器进行监听 。
-
-5. 打印Banner。
-
-6. 使用`SpringFactoriesLoader`查找并加载classpath下的`MATE/spring.factories`文件的`SpringBootExceptionReporter`。这个是分析异常的？todo
-
-7. 执行Spring的初始化流程。
