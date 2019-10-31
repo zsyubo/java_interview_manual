@@ -211,10 +211,20 @@ todo
 3. java8的DateTimeFormatter。他是线程安全。
 
 
-
 # # Integer类的缓存机制
 
 这些类都有缓存的范围，其中`Byte，Short，Integer，Long为 -128 到 127，Character范围为 0 到 127。`
 
 除了 Integer 可以通过参数改变范围外，其它的都不行。
+
+
+# # (美团)Druid 底层原理了解么？如果叫你实现一个类似Druid的你能实现么？
+todo
+
+
+# # (美团)如果让你实现一个线程安全的HashMap你会怎么实现？出了ConcurrentHashMap之外了？
+1.  copyonwrite思想
+    todo
+2. 双HashMap 实现一个线程安全的HashMap？GO中的sync.map实现
+    todo。
 
